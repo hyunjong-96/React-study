@@ -3,6 +3,7 @@ import React from 'react'
 function CreateUser({username,email,onChange,onCreate}){
     return(
         <div>
+            {console.log('CreateUser컴포넌트 렌더')}
             <input
                 name="username"
                 placeholder="계정명"
@@ -20,4 +21,4 @@ function CreateUser({username,email,onChange,onCreate}){
     )
 }
 
-export default CreateUser
+export default React.memo(CreateUser)

@@ -9,11 +9,9 @@ function User({user,index,onRemove,onToggle}){
             console.log(user)
         }
     },[user])
-    const testClick=()=>{
-        console.log('!!!!!!!!!!!!!!!!!')
-    }
     return(
         <div>
+            {console.log('User 컴포넌트 렌더')}
             <b
                 style={{
                     cursor:'pointer',
@@ -22,7 +20,6 @@ function User({user,index,onRemove,onToggle}){
                 onClick={()=>onToggle(user.id)}
             >{user.id} {user.username}</b> <span>({user.email})</span>
             <button onClick={()=>onRemove(user.id)}>삭제</button>
-            <button onClick={testClick}>test</button>
         </div>
     )
 }
@@ -38,6 +35,7 @@ function UserList({users,onRemove,onToggle}) {
     },[users])
     return(
         <div>
+            {console.log('UserList컴포넌트 렌더')}
             {users.map((user,index)=>(
                 <User user={user} index={index} onRemove={onRemove} onToggle={onToggle} key={user.id}/>
             ))}
@@ -45,4 +43,4 @@ function UserList({users,onRemove,onToggle}) {
     )
 }
 
-export default UserList
+export default React.memo(UserList)

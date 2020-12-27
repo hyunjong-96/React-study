@@ -696,3 +696,135 @@ useEffect를 사용 할 때 **첫번째 파라미터에는 함수**, **두번째
 1.**componentWillUnmount**
 
 * 컴포넌트가 제거될 때 호출된다.
+
+# 14.useMemo
+
+성능 최적화를 위해 연산된 **특정값을 재사용**하게 도와주는 Hook
+
+countActiveUsers함수를 그냥 사용하게 되면 리렌더가 될때마다 함수가 실행되어 굉장히 비효율적이게 된다. useMemo를 통해 deps의 상태가 변경될때만 함수를 실행시켜주고 그렇지않다면 그 전의 특정 결과값을 사용하게함.
+
+```jsx
+import React,{useMemo} from 'react'
+const countActiveUsers(users){
+    return users.filter(user=>user.active).length
+}
+function App(){
+    const count = useMemo(()=>countActiveUsers(users),[users])
+}
+```
+
+* 첫번째 파라미터 : 어떻게 연산할지 정의하는 함수
+* 두번째 파라미터 : deps배열
+
+# 15.useCallback
+
+useMemo는 특정 결과값을 재사용 할 때 사용함.
+
+useCallback은 **특정 함수를 새로 만들지 않고 재사용함.**
+
+한번 만든 함수를 필요할때만 새로 만들고 재사용하는것이 중요함.
+
+나중에 컴포넌트에서 props가 바뀌지 않았는데 Virtual DOM에 새로 렌더링하는 것 조차 하지 않고 컴포넌트의 결과물을 재사용하는 최적화 작업을 위함.
+
+```jsx
+import React, {useCallback} from 'react'
+const onRemove = useCallback(id=>{
+    setUsers(users.filter(user=>user.id!==id))
+},[users])
+```
+
+첫번쨰 파라미터인 함수에 props나 상태가 있다면 두번째 파라미터인 deps에 꼭 포함시켜야한다.
+그렇지 않으면 함수 내에서 해당 값들을 참조할때 최신 값을 참조할수 없다.
+
+# 16.컴포넌트 리렌더링 방지
+
+React.memo함수를 사용해서 컴포넌트에서 리렌더링이 필요한 상황에서만 리렌더링을 하도록 설정할수 있다.
+
+```
+export default React.memo( [함수형 컴포넌트] )
+```
+
+컴포넌트를 React.memo로 덮어주면 된다.
+
+* https://react.vlpt.us/basic/19-React.memo.html (참고자료)
+
+1. User컴포넌트에서 user 상태를 변경한다.
+2. user과 관련된 users배열이 바뀔떄마다 users가 deps인 userCallback함수들이 새로 만들어진다.
+3. 최적화를 위해 deps가 users를 지우고 setState를 **함수형**으로 업데이트 해준다. 
+4. 함수형 업데이트를 하게 되면 setState에 등록하는 콜백함수의 파라미터에서 최신 users를 참조 할 수 있기때문에 deps에 users를 넣지 않아도 된다.
+
+```jsx
+const onRemove=useCallback(id=>{
+    setUsers(users.filter(user=>user.id !== id))
+},[users])
+
+//=>
+
+const onRemove=useCallback(id=>{
+    setUsers(users=>users.filter(user=>user.id !== id))
+},[])
+```
+
+# 17.useReducer
+
+userState를 사용해서 상태를 업데이트하는데 useReducer Hoook을 사용해서 **컴포넌트 상태 업데이트 로직을 컴포넌트에서 분리**시킬 수 있다.
+
+## 1)reducer
+
+reducer는 현재 상태와 액션 객체를 파라미터로 받아와서 새로운 상태를 반환해주는 함수.
+
+```jsx
+function reducer(state, action){
+    //새로운 상태를 만드는 로직
+    //const nextState = ...
+    return nextState;
+}
+```
+
+reducer에서 반환하는 상태는 곧 컴포넌트가 지닐 새로운 상태.
+
+## 2)action
+
+action은 업데이트를 위한 정보를 가진것.
+
+주로 type값을 지닌 객체 형태로 사용한다.
+
+```jsx
+//카운터에 1을 더하는 액션
+{
+    type : 'INCREMENT'
+}
+//카운터에 1을 빼는 액션
+{
+    type : 'DECREMENT'
+}
+//input값을 바꾸는 액션
+{
+    type: 'CHANGE_INPUT',
+	key : 'email',
+	value : 'tester@react.com'
+}
+//새 할 일을 등록하는 액션
+{
+    type : 'ADD_TODO',
+	todo : {
+        id : 1,
+	    text:'useReducer 배우기',
+        done : false
+    }
+}
+```
+
+요런식이지만 꼭 지킬필요는 없다.
+
+## 3)useReducer
+
+```jsx
+const [state, dispatch] = useReducer(reducer, initialState)
+```
+
+* state : 앞으로 컴포넌트에서 사용 할 수 있는 상태
+* dispatch : 액션을 발생시키는 함수
+  (dispatch({ type:'INCREMENT' }))
+* reducer(useReducer함수 첫번쨰 파라미터) : reducer함수
+* initialState(두번째 파라미터) : 초기 상태
