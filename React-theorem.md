@@ -828,3 +828,74 @@ const [state, dispatch] = useReducer(reducer, initialState)
   (dispatch({ type:'INCREMENT' }))
 * reducer(useReducer함수 첫번쨰 파라미터) : reducer함수
 * initialState(두번째 파라미터) : 초기 상태
+
+1. initialState설정
+
+   ```jsx
+   const initialState={
+       inputs:{
+           username:'',
+           email:''
+       },
+       users:[
+           {
+               id:1,
+               username:'lee',
+               email:'naver.com',
+               active:true
+           },
+           {...},{...}
+       ]
+   }
+   ```
+
+2. reducer설정
+
+   ```jsx
+   function reducer(state,action){
+       switch(action.type){
+           case 'CHANGE_INPUT':
+               return{
+                   ...state,
+                   inputs:{
+                       ...state.inputs,
+                       [action.name]:action.value
+                   }
+               };
+           default:
+               return state
+       }
+   }
+   ```
+
+3. useReducer선언
+
+   ```jsx
+   const [state, dispatch] = useReducer(reducer,initialState)
+   ```
+
+4. **action발생**(함수 실행)
+   함수에서 dispatch를 통해 action을 발생시킴
+
+   ```jsx
+   const onChange = useCallback((e)=>{
+       const {name,value} = e.target
+       dispatch({
+           type:'CHANGE_INPUT',
+           name,
+           value
+       })
+   },[])
+   ```
+
+5. reducer에서 state변경 및 반환
+
+6. 리렌더링
+
+7. useReducer의 state에 변경된 state 반환
+
+## 4)useState vs useReducer
+
+컴포넌트에서 하나의 state를 사용할때는 useState가 편리
+
+usename, email, active, users 등 여러개의 state를 다룰경우는 useReducer가 편리
