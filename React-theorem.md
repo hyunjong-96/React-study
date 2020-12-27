@@ -765,6 +765,22 @@ const onRemove=useCallback(id=>{
 },[])
 ```
 
+참고로 deps에서 users를 비우고 함수형으로 변경했을때 
+
+```jsx
+setInputs(users=> ({ ...inputs, [name]:value })
+```
+
+위 코드에 {...inputs, [name]:value}객체를 반환하려고하는데 {}가 아닌 ()로 감싸주는 이유는 **ES5문법으로 객체 리터럴 표현을 반환하기 위해서는 함수 본문을 ()로 감싼다고한다.**
+
+풀어쓰면
+
+```jsx
+setInputs((users) => function() {return {...users,[name]:value};});
+```
+
+
+
 # 17.useReducer
 
 userState를 사용해서 상태를 업데이트하는데 useReducer Hoook을 사용해서 **컴포넌트 상태 업데이트 로직을 컴포넌트에서 분리**시킬 수 있다.
