@@ -5,6 +5,7 @@ import Counter from './Counter'
 import InputSample from './InputSample'
 import UserList from './UserList'
 import CreateUser from './CreateUser'
+import StudyCss from './cssTest/Csstest'
 import './App.css'
 
 function countActiveUsers(users){
@@ -199,11 +200,12 @@ function App() {
     // </Wrapper>
     //<Counter/>
     //<InputSample/>
-    <>
+    /*<>
     <CreateUser username={username} email={email} onChange={onChange} onCreate={onCreate}/>
     <UserList users={users} onToggle={onToggle} onRemove={onRemove}/>
     <div>활성사용자 수 : {count}</div>
-    </>
+    </>*/
+    <StudyCss/>
   );
 }
 
