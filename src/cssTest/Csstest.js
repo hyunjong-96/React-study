@@ -2,6 +2,15 @@ import React from 'react'
 
 function Csstest(){
     return(
+        <>
+        <head>
+            <meta charset="utf-8"/>
+            <style type="text/css">
+                body{
+                    margin:20px
+                }
+            </style>
+        </head>
         <body>
             <header id="mainHeader">
             <nav>header/nav</nav>
@@ -39,6 +48,7 @@ function Csstest(){
                 <address>Oppyright (C) designdigit All Right Reserved.</address>
             </footer>
         </body>
+        </>
     )
 }
 

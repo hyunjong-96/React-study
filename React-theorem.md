@@ -1,3 +1,9 @@
+react공부할것.
+
+* styled-component(조건부 스타일링)
+* flex, grid
+* 페이지따라만들기
+
 # 1.react설치
 
 1. yarn global add create-react-app
