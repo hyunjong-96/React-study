@@ -1,6 +1,28 @@
-import React from 'react'
+import React,{useCallback, useContext,useRef} from 'react'
+import useInputs from './hook/useInputs'
+import {UserDispatch} from './App'
 
-function CreateUser({username,email,onChange,onCreate}){
+function CreateUser(){
+    const [{username,email},onChange,reset] = useInputs({
+        username:'',
+        email:''
+    })
+    const nextId = useRef(4)
+    const dispatch = useContext(UserDispatch)
+
+    const onCreate = useCallback(()=>{
+        dispatch({
+            type:'CREATE_USER',
+            user:{
+                id:nextId.current,
+                username,
+                email
+            }
+        })
+        nextId.current+=1
+        reset()
+    },[username,email])
+
     return(
         <div>
             {console.log('CreateUser컴포넌트 렌더')}

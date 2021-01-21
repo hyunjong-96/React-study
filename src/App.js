@@ -48,6 +48,7 @@ function reducer(state,action){
     //     }
     //   };
     case 'CREATE_USER':
+      console.log('action확인!!!',action)
       return{
         // inputs:initialState.inputs,
         users:[...state.users,action.user]
@@ -75,14 +76,14 @@ function reducer(state,action){
 export const UserDispatch = React.createContext(null)
 
 function App(){
-  const [{username,email},onChange,reset] = useInputs({
-    username:'',
-    email:''
-  })
+  // const [{username,email},onChange,reset] = useInputs({
+  //   username:'',
+  //   email:''
+  // })
   const [state,dispatch] = useReducer(reducer,initialState)
   const {users} = state
   // const {username,email} = state.inputs
-  const nextId = useRef(4)
+  // const nextId = useRef(4)
 
   // const onChange=useCallback((e)=>{
   //   const {name,value} = e.target
@@ -93,19 +94,19 @@ function App(){
   //   })
   // },[])
 
-  const onCreate=useCallback(()=>{
-    const user={
-      id:nextId.current,
-      username,
-      email
-    }
-    dispatch({
-      type:'CREATE_USER',
-      user
-    })
-    reset()
-    nextId.current += 1
-  },[username,email])
+  // const onCreate=useCallback(()=>{
+  //   const user={
+  //     id:nextId.current,
+  //     username,
+  //     email
+  //   }
+  //   dispatch({
+  //     type:'CREATE_USER',
+  //     user
+  //   })
+  //   reset()
+  //   nextId.current += 1
+  // },[username,email])
 
   // const onRemove=useCallback((id)=>{
   //   dispatch({
@@ -124,7 +125,7 @@ function App(){
   const count = useMemo(()=>countActiveUsers(users),[users])
   return (
     <UserDispatch.Provider value={dispatch}>
-    <CreateUser username={username} email={email} onChange={onChange} onCreate={onCreate}/>
+    <CreateUser />
     <UserList users={users} />
     <div>활성사용자 수 : {count}</div>
     </UserDispatch.Provider>
