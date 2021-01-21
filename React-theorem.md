@@ -275,6 +275,8 @@ setInputs({
 
 * 만약 불변성을 지키지 않고 직접 inputs[name]=value를 사용하여 변경한다면 리렌더링이 되지 않는다.
 
+* 배열같은경우, push를 해도 해당 객체의 메모리 주소는 변하지 않는다. 이렇게 떄문에 리액트가 객체의 변화를 인식하지 못하고 랜더링이 되지 않을수 있다.
+
 * 그렇지 않는다면
 
   ```
@@ -645,6 +647,9 @@ export default User
 
 //2 : useEffect의 첫 번째 매개변수에 등록된 함수가 또다른 함수를 반환하는것. 반환된 함수는 **컴포넌트가 언마운트되거나** **첫 번째 매개변수로 입력된 함수가 호출되기 직전에 호출**.
 
+//2 : userEffect에서 함수를 반환 할수 있는데 이를 **cleanup함수**라고 한다.
+cleanup함수는 useEffect에 대한 뒷정리를 해준다고 알면되는데. deps가 비어있는 경우에는 컴포넌트가 사라질때 cleanup함수가 호출됨.
+
 useEffect를 사용 할 때 **첫번째 파라미터에는 함수**, **두번째 파라미터에는 의존값이 들어있는 배열(deps)**
 
 1)함수
@@ -655,7 +660,7 @@ useEffect를 사용 할 때 **첫번째 파라미터에는 함수**, **두번째
 2)deps
 
 * **deps을 비우게 된다면**, 컴포넌트가 처음 나타났을때에만 useEffect에 등록한 함수가 호출.
-* **deps를 비웠을 경우**, 첫 번째 파라미터의 함수가 반환하는 함수는 **언마운트 될때만 호출**된다.
+* **deps를 비웠을 경우**, 첫 번째 파라미터의 함수가 반환하는 함수(cleanup)는 **언마운트 될때만 호출**된다.
 * **deps에 특정 값을 넣게되면** 지정한 값이 바뀔 떄에도 호출된다
   (**지정된 값이 변경될때**, **언마운트시** , **값이 바뀌기 직전**에 호출)
 * useEffect안에서 사용하는 상태나 props를 deps에 넣지 않게 되면 useEffect에 등록한 함수가 실행 될 때 최신 props/상태를 가르키지 않게 된다.
@@ -921,3 +926,102 @@ const [state, dispatch] = useReducer(reducer, initialState)
 컴포넌트에서 하나의 state를 사용할때는 useState가 편리
 
 usename, email, active, users 등 여러개의 state를 다룰경우는 useReducer가 편리
+
+# *객체 리터럴 표현을 반환하는 방법
+
+```jsx
+const onCreate = useCallback(()=>{
+    //콜백문은 body를 중괄호에 담아서 로직을 구현한다(짧은 로직은 생략가능)
+})
+
+setForm((form) => (
+    {foo:bar}
+	//함수의 콜백문에서 객체 리터럴 표현을 반환하기 위해서는 함수 본문(body)을 괄호 속에 넣어야한다.
+))
+```
+
+# 18.Context API
+
+onToggle, onRemove같은 함수를 자식컴포넌트에서 사용하기 위해서는 사용하고자하는 컴포넌트의 부모컴포넌트를 거쳐서 파라미터값으로 전달해야하는 번거로움이 있다.
+
+컴포넌트들에서 전역적으로 사용할수 있는 값을 관리 할수 있다.(dispatch를 사용해서.)
+
+프로젝트의 상태를 전역적으로 관리하기 위해서 Context를 사용한다.
+
+```jsx
+export const UserDispatch = React.createContext(null)
+//null을 파라미터값으로 입력해주었을때는 Context를 쓸 때 값을 따로 지정하지 않을 경우 사용되는 기본 값.
+```
+
+Context를 만들면 Context안에있는 Provider라는 컴포넌트를 통해서 Context의 값을 정할수 있다. 이 컴포넌트를 사용할 때 value라는 값을 설정해주면된다.
+
+```jsx
+<UserDispatch.Provider value={dispatch}>...</UserDispatch.Provider>
+```
+
+Context의 Provider에게 감싸진 컴포넌트 중 어디서든 Context의 값을 다른 곳에서 바로 조회하여 사용할수 있다.
+
+```jsx
+import {UserDispatch} from './App'
+```
+
+위 처럼 사용해서 Provider에게 감싸진 컴포넌트에서 선언한 Context를 사용할수 있다.
+
+[App.js]
+
+```jsx
+import React,{useReducer,...} from 'react'
+...
+function redicer(state,action){
+    swtich(action.type){
+        case 'TOOGLE_USER':...
+        case 'REMOVE_USER':...
+    }
+}
+
+function App(){
+    const [state,dispatch] = useReducer(dispatch,initialState)
+    ...
+    export const UserDispatch = React.createContext(null)
+    
+    return(
+    	<UserDispatch.Provider value={dispatch}>
+        <CreateUser/>
+        <UserList/>
+        </UserDispatch.Provider>
+    )
+}
+```
+
+[UserList.js]
+
+```jsx
+import React,{useContext} from 'react'
+import {UserDispatch} from './App'
+
+const User = React.memo(function User({user}){
+    const dispatch = useContext(UserDispatch)
+    return(
+    	...
+        onClick={()=>{
+            dispatch({
+                type:'TOGGE_USER',
+                id:user.id
+            })
+        }}
+        
+       onClick={()=>{
+        dispatch({
+            type:'REMOVE_USER',
+            id:user.id
+        })
+    }}
+    )
+})
+
+function UserList({users}){
+    ...
+}
+export default React.memo(UserList)
+```
+
