@@ -26,10 +26,10 @@ function User({user,index,onRemove,onToggle}){
 
 function UserList({users,onRemove,onToggle}) {
     useEffect(()=>{
-        console.log('users부모컴포넌트')
+        console.log('UserList컴포넌트 화면에 나타남')
         console.log(users)
         return()=>{
-            console.log('users여긴 뭘까')
+            console.log('UserList컴포넌트 화면에 사라짐')
             console.log(users)
         }
     },[users])
