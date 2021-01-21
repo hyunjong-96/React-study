@@ -1128,6 +1128,8 @@ shouldComponentUpdate 메서드는 컴포넌트가 리렌더링 할지 말지 �
 
 주로 최적화 할 때 사용하는 메서드. React.memo의 역할과 비슷하다고 이해하면됨.
 
+newProps, setState()
+
 ### (3)render
 
 ### (4)getSnapshotBeforeUpdate
@@ -1153,3 +1155,13 @@ componentDidUpdate 메소드는 리렌더링이 마치고, 화면에 우리가 �
 컴포넌트가 화면에 사라지기 직전에 호출됨.
 
 외부라이브러리를 사용한게 있고 해당 라이브러리에 dispose기능이 있다면 여기 메소드에서 호출해주면 된다.
+
+# 20.에러관리
+
+클래스형 컴포넌트의 componentDidCatch 메소드를 사용해서 에러 처리.
+
+https://react.vlpt.us/basic/26-componentDidCatch-and-sentry.html
+
+# 21.react개발에 필요한 도구
+
+https://react.vlpt.us/basic/27-useful-tools.html
