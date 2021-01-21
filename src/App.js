@@ -9,6 +9,8 @@ import UserList from './UserList'
 import CreateUser from './CreateUser'
 import useInputs from './hook/useInputs'
 import './App.css'
+import produce from 'immer'
+import ErrorBoundary from './Error/ErrorBoundary'
 
 const initialState = {
   users:[
@@ -48,18 +50,28 @@ function reducer(state,action){
     //     }
     //   };
     case 'CREATE_USER':
-      console.log('action확인!!!',action)
-      return{
-        // inputs:initialState.inputs,
-        users:[...state.users,action.user]
-      };
+      // return{
+      //   // inputs:initialState.inputs,
+      //   users:[...state.users,action.user]
+      // };
+      return(
+        produce((state,draft) =>{
+          draft.users.push(action.user)
+        })
+      )
     case 'REMOVE_USER':
-      return{
-        ...state,
-        users:state.users.filter(user=>(
-          user.id !== action.id 
-        ))
-      };
+      // return{
+      //   ...state,
+      //   users:state.users.filter(user=>(
+      //     user.id !== action.id 
+      //   ))
+      // };
+      return(
+        produce((state,draft)=>{
+          const index = draft.users.findIndex(user => user.id === action.id)
+          draft.users.splice(index,1)
+        })
+      )
     case 'TOGGLE_USER':
       return{
         ...state,
@@ -124,12 +136,13 @@ function App(){
 
   const count = useMemo(()=>countActiveUsers(users),[users])
   return (
+    <ErrorBoundary>
     <UserDispatch.Provider value={dispatch}>
     <CreateUser />
-    <UserList users={users} />
+    <UserList  />
     <div>활성사용자 수 : {count}</div>
     </UserDispatch.Provider>
-    
+    </ErrorBoundary>
   );
 }
 
