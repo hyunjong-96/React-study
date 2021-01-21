@@ -1025,3 +1025,131 @@ function UserList({users}){
 export default React.memo(UserList)
 ```
 
+# *불변성 관리(Immer)
+
+Immer를 통해 state를 업데이터할때, 불변성을 신경쓰지 않으면서 업데이트를 해줄수 있다.
+
+[1]
+
+```
+npm install immer
+```
+
+[2]
+
+```javascript
+import produce from 'immer'
+//보통 immer라이브러리는 produce라는 이름으로 불러온다.
+```
+
+[3]
+
+```javascript
+const state = {
+    number:1,
+    dontChangeMe:2
+}
+
+const nextState = produce((state, draft) => {
+    draft.number +=1
+})
+console.log(nextState)//{number:2, dontChangeMe:2}
+
+//produce의 첫번째 파라미터 : 수정하고싶은 state
+//두번째 파라미터 : 어떻게 업데이트하고 싶을지 정의하는 함수
+```
+
+[ex] TOGGLE_USER
+
+```jsx
+case 'TOGGLE_USER':
+	return(
+    	produce((state,draft)=>{
+            const user = draft.users.find(user=>user.id===action.id)
+            user.active = !user.active
+        })
+    )
+```
+
+# 19.LifeCycle
+
+클래스형 컴포넌트에 해당하는 내용(함수형 컴포넌트는 클래스형 컴포넌트의 생명주기를 대체하는 함수들을 가지고 있다. 하지만 모두 대체할수 있는것은 아니다.)
+
+![image](https://user-images.githubusercontent.com/57162257/105382850-dde8e200-5c53-11eb-8495-4634bf05484d.png)
+
+## [1]Mount(마운트)
+
+* constructor(생성자)
+* getDerivedStateFromProps
+* render
+* componentDidMount
+
+### (1)constructor
+
+constructor는 컴포넌트의 생성자 메서드, 컴포넌트가 만들어지면 가장 먼저 실행되는 메서드.
+
+### (2)getDerivedStateFromProps
+
+getDerivedStateFromProps는 props로 받아온 것을 state에 넣어주고 싶을때 사용.
+
+이 메서드는 컴포넌트가 **처음 렌더링 되기 전에 호출**되고, 그 이후 **리렌더링 되기 전에도 매번 실행**됨.
+
+### (3)render
+
+컴포넌트를 렌더링하는 메서드
+
+### (4)componentDidMount
+
+컴포넌트의 첫번째 렌더링이 마치고 나면 호출되는 메서드.
+
+이 메서드가 호출되는 시점에서 우리가 만든 컴포넌트가 화면에 나타난 상태.
+
+여기서는 주로 DOM을 사용해야하는 **외부 라이브러리 연동**을하거나, 해당 컴포넌트에서 필요로하는 데이터를 요청하기 위해 **axios, fetch등을 통하여 ajax요청**을 하거나 **DOM의 속성을 읽거나 직접 변경하는 작업**을 진행.
+
+
+
+## [2]Update(업데이트)
+
+* getDerivedStateFromProps
+* shouldComponentUpdate
+* render
+* getSnapshotBeforeUpdate
+* componentDidUpdate
+
+### (1)getDerivedStateFromProps
+
+컴포넌트의 props나 state가 바뀌었을때 이 메서드가 호출됨.
+
+newProps, setState(), forceUpdate()
+
+### (2)shouldComponentUpdate
+
+shouldComponentUpdate 메서드는 컴포넌트가 리렌더링 할지 말지 결정하는 메서드
+
+주로 최적화 할 때 사용하는 메서드. React.memo의 역할과 비슷하다고 이해하면됨.
+
+### (3)render
+
+### (4)getSnapshotBeforeUpdate
+
+getSnapshotBeforeUpdate 메서드는 컴포넌트에 변화가 일어나기 직전의 DOM상태를 가져와서 특정 값을 반환하면 그 다음 발생하게 되는 componentDidUpdate 함수에서 받아와서 사용을 할 수 있따.
+
+함수형 컴포넌트 + Hook을 사용할때는 해당 메서드를 대체할수 있는 기능이 없다.
+
+### (5)componentDidUpdate
+
+componentDidUpdate 메소드는 리렌더링이 마치고, 화면에 우리가 원하는 변화가 모두 반영되고 난 뒤 호출 되는 메서드.
+
+3번째 파라미터로 getSnapshotBeforeUpdate 에서 반환되는 값을 조화 할 수 있다.
+
+
+
+## [3]UnMount(언마운트)
+
+* componentWillUnmount
+
+### (1)componentWillUnmount
+
+컴포넌트가 화면에 사라지기 직전에 호출됨.
+
+외부라이브러리를 사용한게 있고 해당 라이브러리에 dispose기능이 있다면 여기 메소드에서 호출해주면 된다.
